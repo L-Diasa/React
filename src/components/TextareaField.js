@@ -1,10 +1,11 @@
 import React from 'react';
+import { hasLimitedCharacters } from "../utils";
 
 export default class TextareaField extends React.Component {
     render() {
         const { 
-            rows, name, value, handleChange,labelText, 
-            placeholder, submitted, hasLimitedCharacters
+            rows, name, value, handleChange,
+            labelText, placeholder, submitted
         } = this.props;
 
         return (
@@ -18,14 +19,16 @@ export default class TextareaField extends React.Component {
                     placeholder={placeholder}
                     onChange={handleChange}
                 />
-                 <p>{value.length}/600</p>
-                 {submitted && 
-                 <>
-                  {!value ? <p>Поле пустое. Заполните пожалуйста</p> :
-                   <>{hasLimitedCharacters && <p>Превышен лимит символов в поле</p>}</>
-                  }
-                 </> 
-                  }
+                {    
+                    hasLimitedCharacters(value) ? 
+                    <p className='char-count'>{value.length}/600</p> :
+                    <p className={`char-count-error ${submitted ? 'submitted' : ''}`}>
+                        Превышен лимит символов в поле
+                    </p>
+                }
+                <div className='errors'>
+                    {submitted && !value && <p>Поле пустое. Заполните пожалуйста</p> }
+                </div>
             </>
         );
     }

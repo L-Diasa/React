@@ -19,13 +19,13 @@ export default class InputField extends React.Component {
                     placeholder={placeholder}
                     onChange={handleChange}
                 />
-   
-                {submitted &&
-                <> {value ? 
-                    !validated && <p>{validationFailedText}</p> : 
-                    <p>Поле пустое. Заполните пожалуйста</p>}
-                </>
-                }
+                <div className='errors'>
+                    {submitted &&
+                    <> {value ? 
+                        !validated && <p>{validationFailedText}</p> : 
+                        <p>Поле пустое. Заполните пожалуйста</p>}
+                    </>}
+                </div>
             </>
         );
     }

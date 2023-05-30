@@ -35,7 +35,7 @@ header {
 
 form input, form textarea {
   margin-top: 2px;
-  margin-bottom: 30px;
+  margin-bottom: 2px;
   padding: 10px;
   border: none;
   background: var(--blue-light);
@@ -82,4 +82,50 @@ form label {
 .buttons-div button:hover {
   color: var(--white);
   background: var(--blue);
+}
+
+.errors {
+  height: 50px;
+}
+
+.errors p {
+  color: red;
+  font-size: 12px;
+  padding-top: 0;
+  padding-left: 2px;
+  margin-top: 0;
+}
+
+.char-count, .char-count-error {
+  /* align-self: flex-end; */
+  padding: 2px;
+  font-size: 12px;
+  margin: 0px;
+  color: var(--blue);
+}
+
+.char-count-error.submitted {
+  color: red;
+}
+
+.info-title {
+  margin-top: 0;
+
+}
+
+.main-content h3 {
+  align-self: center;
+  font-weight: 400;
+}
+
+.info-title {
+  font-size: 16px;
+  margin-bottom: 0px;
+  font-weight: 400;
+  color: var(--blue);
+}
+
+.info-content {
+  margin-top: 0px;
+  font-size: 14px;
 }

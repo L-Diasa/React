@@ -115,7 +115,7 @@ class App extends React.Component {
         <>
         <header>анкета</header>
         <main className="main-content">
-          <h4>{this.state.name} {this.state.surname}</h4>
+          <h3>{this.state.name} {this.state.surname}</h3>
           <InfoField title="Дата рождения" content={this.state.birthDate}/>
           <InfoField title="Телефон" content={this.state.number}/>
           <InfoField title="Сайт" content={this.state.site}/>
@@ -136,7 +136,7 @@ class App extends React.Component {
             value={this.state.name}  
             submitted={this.state.submitted}
             validated={!this.state.invalidFields["name"]}
-            validationFailedText={"Первый символ должен быть заглавной буквой."}
+            validationFailedText={"Первый символ должен быть заглавной буквой"}
           />
           <InputField  
             type="text" 
@@ -147,7 +147,7 @@ class App extends React.Component {
             value={this.state.surname} 
             submitted={this.state.submitted}
             validated={!this.state.invalidFields["surname"]}
-            validationFailedText={"Первый символ должен быть заглавной буквой."}
+            validationFailedText={"Первый символ должен быть заглавной буквой"}
           />
           <InputField  
             type="date" 
@@ -190,7 +190,6 @@ class App extends React.Component {
             placeholder="Расскажите о себе" 
             value={this.state.about} 
             submitted={this.state.submitted}
-            hasLimitedCharacters={this.state.invalidFields["about"]}
           />
           <TextareaField
             rows="7" 
@@ -200,7 +199,6 @@ class App extends React.Component {
             placeholder="Введите стек технологий" 
             value={this.state.technologyStack} 
             submitted={this.state.submitted}
-            hasLimitedCharacters={this.state.invalidFields["technologyStack"]}
           />
           <TextareaField
             rows="7" 
@@ -210,7 +208,6 @@ class App extends React.Component {
             placeholder="Введите описание последнего проекта" 
             value={this.state.projectDescription} 
             submitted={this.state.submitted}
-            hasLimitedCharacters={this.state.invalidFields["projectDescription"]}
           />
           <div className='buttons-div'>
             <Button 

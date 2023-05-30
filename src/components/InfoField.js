@@ -6,8 +6,8 @@ export default class InfoField extends React.Component {
 
         return (
             <div>
-                <h5>{title}</h5>
-                <p>{content}</p>
+                <p className='info-title'>{title}</p>
+                <p className='info-content'>{content}</p>
             </div>
         );
     }
