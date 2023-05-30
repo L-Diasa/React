@@ -3,7 +3,8 @@ import './App.css';
 import Button from './components/Button';
 import InputField from './components/InputField';
 import TextareaField from './components/TextareaField';
-
+import { startsWithCap, formatNumber, isFullNumber, 
+      isValidDate, isValidSite, hasLimitedCharacters } from "./utils";
 class App extends React.Component {
   state = {
     name: '',
@@ -13,20 +14,99 @@ class App extends React.Component {
     site: '',
     about: '', 
     technologyStack: '',
-    projectDescription: ''
+    projectDescription: '',
+    invalidFields: {},
+    submitted: false
   }
   
   handleChange = (event) => {
-    const { name, value } = event.target;
+    const { name, value } = event.target
     this.setState(prevState => ({
       ...prevState, 
-      [name]: value
-    }));
+      [name]: value, 
+      submitted: false
+    }))
+  }
+
+  handleNumberChange = (event) => {
+    const { value } = event.target
+    this.setState(prevState => ({
+      ...prevState, 
+      number: formatNumber(value),
+      submitted: false
+    }))
+  }
+
+  handleTextareaChange = (event) => {
+    const { name, value } = event.target
+    this.handleChange(event)
+    if(!hasLimitedCharacters(value)) {
+      this.setFieldInvalid(name)
+    }
+  }
+
+  handleSubmit = () => {
+    this.setState(prevState => ({
+      ...Object.keys(prevState).reduce((trimmedState, key) => {
+        trimmedState[key] = typeof prevState[key] === 'string' ? 
+        prevState[key].trim() : prevState[key]
+        return trimmedState
+      }, {}),
+      submitted: true
+    }))
+
+    this.setState(prevState => ({
+      ...prevState, 
+      invalidFields: {}
+    }))
+
+    if(!startsWithCap(this.state.name)) 
+      this.setFieldInvalid("name")
+    
+    if(!startsWithCap(this.state.surname)) 
+      this.setFieldInvalid("surname")
+    
+    if(!isFullNumber(this.state.number)) 
+      this.setFieldInvalid("number")
+    
+    if(!isValidDate(this.state.date)) 
+      this.setFieldInvalid("birthDate")
+    
+    if(!isValidSite(this.state.site)) 
+      this.setFieldInvalid("site")
+    
+    if(!hasLimitedCharacters(this.state.about)) 
+      this.setFieldInvalid("about")
+    
+    if(!hasLimitedCharacters(this.state.technologyStack)) 
+      this.setFieldInvalid("technologyStack")
+
+    if(!hasLimitedCharacters(this.state.projectDescription)) 
+      this.setFieldInvalid("projectDescription")
+  }
+
+  setFieldInvalid = (fieldName) => {
+    this.setState(prevState => ({
+      ...prevState, 
+      invalidFields: {
+        ...prevState.invalidFields, 
+        [fieldName]: true
+      }
+    }))
+  }
+
+  handleCancel = () => {
+    this.setState(prevState => 
+      Object.keys(prevState).reduce((acc, key) => {
+      acc[key] = ''
+      return acc
+    }, {}))
   }
 
   render() {
     return ( 
       <div className="app">
+        {console.log(this.state.invalidFields)}
         <header>Создание анкеты</header>
         <form onSubmit={e => e.preventDefault()}>
           <InputField  
@@ -36,6 +116,9 @@ class App extends React.Component {
             labelText="Имя"
             placeholder="Введите имя" 
             value={this.state.name}  
+            submitted={this.state.submitted}
+            validated={!this.state.invalidFields["name"]}
+            validationFailedText={"Первый символ должен быть заглавной буквой."}
           />
           <InputField  
             type="text" 
@@ -44,6 +127,9 @@ class App extends React.Component {
             labelText="Фамилия"
             placeholder="Введите фамилию" 
             value={this.state.surname} 
+            submitted={this.state.submitted}
+            validated={!this.state.invalidFields["surname"]}
+            validationFailedText={"Первый символ должен быть заглавной буквой."}
           />
           <InputField  
             type="date" 
@@ -52,14 +138,20 @@ class App extends React.Component {
             labelText="Дата рождения" 
             placeholder="Введите дату рождения" 
             value={this.state.birthDate} 
+            submitted={this.state.submitted}
+            validated={!this.state.invalidFields["birthDate"]}
+            validationFailedText={"Введите действительную дату"}
           />
           <InputField  
-            type="number" 
+            type="text" 
             name="number" 
-            handleChange={this.handleChange}
+            handleChange={this.handleNumberChange}
             labelText="Телефон"
             placeholder="Введите номер телефона" 
             value={this.state.number} 
+            submitted={this.state.submitted}
+            validated={!this.state.invalidFields["number"]}
+            validationFailedText={"Введите полный номер"}
           />
           <InputField  
             type="text" 
@@ -68,34 +160,49 @@ class App extends React.Component {
             labelText="Сайт"
             placeholder="Введите адрес сайта"
             value={this.state.site}  
+            submitted={this.state.submitted}
+            validated={!this.state.invalidFields["site"]}
+            validationFailedText={"Должен начинаться с https://"}
           />
           <TextareaField
             rows="7" 
             name="about" 
-            handleChange={this.handleChange}
+            handleChange={this.handleTextareaChange}
             labelText="О себе"
             placeholder="Расскажите о себе" 
             value={this.state.about} 
+            submitted={this.state.submitted}
+            hasLimitedCharacters={this.state.invalidFields["about"]}
           />
           <TextareaField
             rows="7" 
             name="technologyStack"
-            handleChange={this.handleChange} 
+            handleChange={this.handleTextareaChange} 
             labelText="Стек технологий"
             placeholder="Введите стек технологий" 
             value={this.state.technologyStack} 
+            submitted={this.state.submitted}
+            hasLimitedCharacters={this.state.invalidFields["technologyStack"]}
           />
           <TextareaField
             rows="7" 
             name="projectDescription" 
-            handleChange={this.handleChange}
+            handleChange={this.handleTextareaChange}
             labelText="Описание последнего проекта"
             placeholder="Введите описание последнего проекта" 
             value={this.state.projectDescription} 
+            submitted={this.state.submitted}
+            hasLimitedCharacters={this.state.invalidFields["projectDescription"]}
           />
           <div className='buttons-div'>
-            <Button text="Отмена" />
-            <Button text="Сохранить" />
+            <Button 
+              text="Отмена" 
+              handleClick={this.handleCancel}  
+            />
+            <Button 
+              text="Сохранить" 
+              handleClick={this.handleSubmit}  
+            />
           </div>
         </form>
       </div>

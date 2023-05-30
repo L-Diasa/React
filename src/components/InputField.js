@@ -4,8 +4,9 @@ export default class InputField extends React.Component {
     render() {
         const { 
             type, name, value, handleChange, 
-            labelText, placeholder 
-        } = this.props;
+            labelText, placeholder, submitted, 
+            validated, validationFailedText
+        } = this.props
 
         return (
             <>
@@ -18,6 +19,13 @@ export default class InputField extends React.Component {
                     placeholder={placeholder}
                     onChange={handleChange}
                 />
+   
+                {submitted &&
+                <> {value ? 
+                    !validated && <p>{validationFailedText}</p> : 
+                    <p>Поле пустое. Заполните пожалуйста</p>}
+                </>
+                }
             </>
         );
     }
