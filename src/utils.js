@@ -36,6 +36,10 @@ function hasLimitedCharacters(value) {
     return value.length <= 600
 }
 
+function displayDate(date) {
+
+}
+
 export {
     startsWithCap, 
     formatNumber,

@@ -3,6 +3,7 @@ import './App.css';
 import Button from './components/Button';
 import InputField from './components/InputField';
 import TextareaField from './components/TextareaField';
+import InfoField from './components/InfoField';
 import { startsWithCap, formatNumber, isFullNumber, 
       isValidDate, isValidSite, hasLimitedCharacters } from "./utils";
 class App extends React.Component {
@@ -69,19 +70,22 @@ class App extends React.Component {
     if(!isFullNumber(this.state.number)) 
       this.setFieldInvalid("number")
     
-    if(!isValidDate(this.state.date)) 
+    if(!isValidDate(this.state.birthDate) ) 
       this.setFieldInvalid("birthDate")
     
     if(!isValidSite(this.state.site)) 
       this.setFieldInvalid("site")
     
-    if(!hasLimitedCharacters(this.state.about)) 
+    if(!this.state.about || 
+      !hasLimitedCharacters(this.state.about)) 
       this.setFieldInvalid("about")
     
-    if(!hasLimitedCharacters(this.state.technologyStack)) 
+    if(!this.state.technologyStack || 
+      !hasLimitedCharacters(this.state.technologyStack)) 
       this.setFieldInvalid("technologyStack")
 
-    if(!hasLimitedCharacters(this.state.projectDescription)) 
+    if(!this.state.projectDescription || 
+      !hasLimitedCharacters(this.state.projectDescription)) 
       this.setFieldInvalid("projectDescription")
   }
 
@@ -106,9 +110,23 @@ class App extends React.Component {
   render() {
     return ( 
       <div className="app">
-        {console.log(this.state.invalidFields)}
+        {(this.state.submitted && Object.keys(this.state.invalidFields).length === 0
+        ) ? 
+        <>
+        <header>анкета</header>
+        <main className="main-content">
+          <h4>{this.state.name} {this.state.surname}</h4>
+          <InfoField title="Дата рождения" content={this.state.birthDate}/>
+          <InfoField title="Телефон" content={this.state.number}/>
+          <InfoField title="Сайт" content={this.state.site}/>
+          <InfoField title="О себе" content={this.state.about}/>
+          <InfoField title="Стек технологий" content={this.state.technologyStack}/>
+          <InfoField title="Описание последнего проекта" content={this.state.projectDescription}/>
+        </main>
+        </> :
+        <> 
         <header>Создание анкеты</header>
-        <form onSubmit={e => e.preventDefault()}>
+        <form className="main-content" onSubmit={e => e.preventDefault()}>
           <InputField  
             type="text" 
             name="name" 
@@ -205,6 +223,7 @@ class App extends React.Component {
             />
           </div>
         </form>
+        </>}
       </div>
     );
   }

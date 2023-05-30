@@ -19,8 +19,13 @@ export default class TextareaField extends React.Component {
                     onChange={handleChange}
                 />
                  <p>{value.length}/600</p>
-                 {submitted && !value && <p>Поле пустое. Заполните пожалуйста</p>}
-                 {hasLimitedCharacters && <p>Превышен лимит символов в поле</p>}
+                 {submitted && 
+                 <>
+                  {!value ? <p>Поле пустое. Заполните пожалуйста</p> :
+                   <>{hasLimitedCharacters && <p>Превышен лимит символов в поле</p>}</>
+                  }
+                 </> 
+                  }
             </>
         );
     }
