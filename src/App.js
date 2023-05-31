@@ -99,6 +99,7 @@ function App () {
       acc[key] = ''
       return acc
     }, {}))
+    setSubmitted(false)
   }
 
   return ( 
