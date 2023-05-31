@@ -1,4 +1,4 @@
-import React from 'react';
+import { useState } from 'react';
 import './App.css';
 import Button from './components/Button';
 import InputField from './components/InputField';
@@ -6,8 +6,9 @@ import TextareaField from './components/TextareaField';
 import InfoField from './components/InfoField';
 import { startsWithCap, formatNumber, isFullNumber, 
       isValidDate, isValidSite, hasLimitedCharacters } from "./utils";
-class App extends React.Component {
-  state = {
+
+function App () {
+  const [formInfo, setFormInfo] = useState( {
     name: '',
     surname: '', 
     birthDate: '',
@@ -15,215 +16,206 @@ class App extends React.Component {
     site: '',
     about: '', 
     technologyStack: '',
-    projectDescription: '',
-    invalidFields: {},
-    submitted: false
-  }
+    projectDescription: ''
+  })
+
+  const [submitted, setSubmitted] = useState(false)
+  const [invalidFields, setInvalidFields] = useState({})
   
-  handleChange = (event) => {
+  function handleChange(event) {
     const { name, value } = event.target
-    this.setState(prevState => ({
+    setFormInfo(prevState => ({
       ...prevState, 
       [name]: value, 
-      submitted: false
     }))
+    setSubmitted(false)
   }
 
-  handleNumberChange = (event) => {
+  function handleNumberChange(event) {
     const { value } = event.target
-    this.setState(prevState => ({
+    setFormInfo(prevState => ({
       ...prevState, 
       number: formatNumber(value),
-      submitted: false
     }))
+    setSubmitted(false)
   }
 
-  handleTextareaChange = (event) => {
+  function handleTextareaChange(event) {
     const { name, value } = event.target
-    this.handleChange(event)
+    handleChange(event)
     if(!hasLimitedCharacters(value)) {
-      this.setFieldInvalid(name)
+      setFieldInvalid(name)
     }
   }
 
-  handleSubmit = () => {
-    this.setState(prevState => ({
+  function handleSubmit() {
+    setFormInfo(prevState => ({
       ...Object.keys(prevState).reduce((trimmedState, key) => {
-        trimmedState[key] = typeof prevState[key] === 'string' ? 
-        prevState[key].trim() : prevState[key]
+        trimmedState[key] = prevState[key].trim()
         return trimmedState
       }, {}),
-      submitted: true
     }))
+    setSubmitted(true)
+    setInvalidFields({})
 
-    this.setState(prevState => ({
-      ...prevState, 
-      invalidFields: {}
-    }))
+    if(!startsWithCap(formInfo.name)) 
+      setFieldInvalid("name")
+    
+    if(!startsWithCap(formInfo.surname)) 
+      setFieldInvalid("surname")
+    
+    if(!isFullNumber(formInfo.number)) 
+      setFieldInvalid("number")
+    
+    if(!isValidDate(formInfo.birthDate) ) 
+      setFieldInvalid("birthDate")
+    
+    if(!isValidSite(formInfo.site)) 
+      setFieldInvalid("site")
+    
+    if(!formInfo.about || 
+      !hasLimitedCharacters(formInfo.about)) 
+      setFieldInvalid("about")
+    
+    if(!formInfo.technologyStack || 
+      !hasLimitedCharacters(formInfo.technologyStack)) 
+      setFieldInvalid("technologyStack")
 
-    if(!startsWithCap(this.state.name)) 
-      this.setFieldInvalid("name")
-    
-    if(!startsWithCap(this.state.surname)) 
-      this.setFieldInvalid("surname")
-    
-    if(!isFullNumber(this.state.number)) 
-      this.setFieldInvalid("number")
-    
-    if(!isValidDate(this.state.birthDate) ) 
-      this.setFieldInvalid("birthDate")
-    
-    if(!isValidSite(this.state.site)) 
-      this.setFieldInvalid("site")
-    
-    if(!this.state.about || 
-      !hasLimitedCharacters(this.state.about)) 
-      this.setFieldInvalid("about")
-    
-    if(!this.state.technologyStack || 
-      !hasLimitedCharacters(this.state.technologyStack)) 
-      this.setFieldInvalid("technologyStack")
-
-    if(!this.state.projectDescription || 
-      !hasLimitedCharacters(this.state.projectDescription)) 
-      this.setFieldInvalid("projectDescription")
+    if(!formInfo.projectDescription || 
+      !hasLimitedCharacters(formInfo.projectDescription)) 
+      setFieldInvalid("projectDescription")
   }
 
-  setFieldInvalid = (fieldName) => {
-    this.setState(prevState => ({
-      ...prevState, 
-      invalidFields: {
-        ...prevState.invalidFields, 
-        [fieldName]: true
-      }
+  function setFieldInvalid(fieldName){
+    setInvalidFields(prev => ({
+    invalidFields, 
+      [fieldName]: true
     }))
   }
 
-  handleCancel = () => {
-    this.setState(prevState => 
+  function handleCancel() {
+    setFormInfo(prevState => 
       Object.keys(prevState).reduce((acc, key) => {
       acc[key] = ''
       return acc
     }, {}))
   }
 
-  render() {
-    return ( 
-      <div className="app">
-        {(this.state.submitted && Object.keys(this.state.invalidFields).length === 0
-        ) ? 
-        <>
-        <header>анкета</header>
-        <main className="main-content">
-          <h3>{this.state.name} {this.state.surname}</h3>
-          <InfoField title="Дата рождения" content={this.state.birthDate}/>
-          <InfoField title="Телефон" content={this.state.number}/>
-          <InfoField title="Сайт" content={this.state.site}/>
-          <InfoField title="О себе" content={this.state.about}/>
-          <InfoField title="Стек технологий" content={this.state.technologyStack}/>
-          <InfoField title="Описание последнего проекта" content={this.state.projectDescription}/>
-        </main>
-        </> :
-        <> 
-        <header>Создание анкеты</header>
-        <form className="main-content" onSubmit={e => e.preventDefault()}>
-          <InputField  
-            type="text" 
-            name="name" 
-            handleChange={this.handleChange}
-            labelText="Имя"
-            placeholder="Введите имя" 
-            value={this.state.name}  
-            submitted={this.state.submitted}
-            validated={!this.state.invalidFields["name"]}
-            validationFailedText={"Первый символ должен быть заглавной буквой"}
+  return ( 
+    <div className="app">
+      {(submitted && Object.keys(invalidFields).length === 0
+      ) ? 
+      <>
+      <header>анкета</header>
+      <main className="main-content">
+        <h3>{formInfo.name} {formInfo.surname}</h3>
+        <InfoField title="Дата рождения" content={formInfo.birthDate}/>
+        <InfoField title="Телефон" content={formInfo.number}/>
+        <InfoField title="Сайт" content={formInfo.site}/>
+        <InfoField title="О себе" content={formInfo.about}/>
+        <InfoField title="Стек технологий" content={formInfo.technologyStack}/>
+        <InfoField title="Описание последнего проекта" content={formInfo.projectDescription}/>
+      </main>
+      </> :
+      <> 
+      <header>Создание анкеты</header>
+      <form className="main-content" onSubmit={e => e.preventDefault()}>
+        <InputField  
+          type="text" 
+          name="name" 
+          handleChange={handleChange}
+          labelText="Имя"
+          placeholder="Введите имя" 
+          value={formInfo.name}  
+          submitted={submitted}
+          validated={!invalidFields["name"]}
+          validationFailedText={"Первый символ должен быть заглавной буквой"}
+        />
+        <InputField  
+          type="text" 
+          name="surname" 
+          handleChange={handleChange} 
+          labelText="Фамилия"
+          placeholder="Введите фамилию" 
+          value={formInfo.surname} 
+          submitted={submitted}
+          validated={!invalidFields["surname"]}
+          validationFailedText={"Первый символ должен быть заглавной буквой"}
+        />
+        <InputField  
+          type="date" 
+          name="birthDate" 
+          handleChange={handleChange}
+          labelText="Дата рождения" 
+          placeholder="Введите дату рождения" 
+          value={formInfo.birthDate} 
+          submitted={submitted}
+          validated={!invalidFields["birthDate"]}
+          validationFailedText={"Введите действительную дату"}
+        />
+        <InputField  
+          type="text" 
+          name="number" 
+          handleChange={handleNumberChange}
+          labelText="Телефон"
+          placeholder="Введите номер телефона" 
+          value={formInfo.number} 
+          submitted={submitted}
+          validated={!invalidFields["number"]}
+          validationFailedText={"Введите полный номер"}
+        />
+        <InputField  
+          type="text" 
+          name="site" 
+          handleChange={handleChange}
+          labelText="Сайт"
+          placeholder="Введите адрес сайта"
+          value={formInfo.site}  
+          submitted={submitted}
+          validated={!invalidFields["site"]}
+          validationFailedText={"Должен начинаться с https://"}
+        />
+        <TextareaField
+          rows="7" 
+          name="about" 
+          handleChange={handleTextareaChange}
+          labelText="О себе"
+          placeholder="Расскажите о себе" 
+          value={formInfo.about} 
+          submitted={submitted}
+        />
+        <TextareaField
+          rows="7" 
+          name="technologyStack"
+          handleChange={handleTextareaChange} 
+          labelText="Стек технологий"
+          placeholder="Введите стек технологий" 
+          value={formInfo.technologyStack} 
+          submitted={submitted}
+        />
+        <TextareaField
+          rows="7" 
+          name="projectDescription" 
+          handleChange={handleTextareaChange}
+          labelText="Описание последнего проекта"
+          placeholder="Введите описание последнего проекта" 
+          value={formInfo.projectDescription} 
+          submitted={submitted}
+        />
+        <div className='buttons-div'>
+          <Button 
+            text="Отмена" 
+            handleClick={handleCancel}  
           />
-          <InputField  
-            type="text" 
-            name="surname" 
-            handleChange={this.handleChange} 
-            labelText="Фамилия"
-            placeholder="Введите фамилию" 
-            value={this.state.surname} 
-            submitted={this.state.submitted}
-            validated={!this.state.invalidFields["surname"]}
-            validationFailedText={"Первый символ должен быть заглавной буквой"}
+          <Button 
+            text="Сохранить" 
+            handleClick={handleSubmit}  
           />
-          <InputField  
-            type="date" 
-            name="birthDate" 
-            handleChange={this.handleChange}
-            labelText="Дата рождения" 
-            placeholder="Введите дату рождения" 
-            value={this.state.birthDate} 
-            submitted={this.state.submitted}
-            validated={!this.state.invalidFields["birthDate"]}
-            validationFailedText={"Введите действительную дату"}
-          />
-          <InputField  
-            type="text" 
-            name="number" 
-            handleChange={this.handleNumberChange}
-            labelText="Телефон"
-            placeholder="Введите номер телефона" 
-            value={this.state.number} 
-            submitted={this.state.submitted}
-            validated={!this.state.invalidFields["number"]}
-            validationFailedText={"Введите полный номер"}
-          />
-          <InputField  
-            type="text" 
-            name="site" 
-            handleChange={this.handleChange}
-            labelText="Сайт"
-            placeholder="Введите адрес сайта"
-            value={this.state.site}  
-            submitted={this.state.submitted}
-            validated={!this.state.invalidFields["site"]}
-            validationFailedText={"Должен начинаться с https://"}
-          />
-          <TextareaField
-            rows="7" 
-            name="about" 
-            handleChange={this.handleTextareaChange}
-            labelText="О себе"
-            placeholder="Расскажите о себе" 
-            value={this.state.about} 
-            submitted={this.state.submitted}
-          />
-          <TextareaField
-            rows="7" 
-            name="technologyStack"
-            handleChange={this.handleTextareaChange} 
-            labelText="Стек технологий"
-            placeholder="Введите стек технологий" 
-            value={this.state.technologyStack} 
-            submitted={this.state.submitted}
-          />
-          <TextareaField
-            rows="7" 
-            name="projectDescription" 
-            handleChange={this.handleTextareaChange}
-            labelText="Описание последнего проекта"
-            placeholder="Введите описание последнего проекта" 
-            value={this.state.projectDescription} 
-            submitted={this.state.submitted}
-          />
-          <div className='buttons-div'>
-            <Button 
-              text="Отмена" 
-              handleClick={this.handleCancel}  
-            />
-            <Button 
-              text="Сохранить" 
-              handleClick={this.handleSubmit}  
-            />
-          </div>
-        </form>
-        </>}
-      </div>
-    );
-  }
+        </div>
+      </form>
+      </>}
+    </div>
+  );
 }
 
 export default App;
