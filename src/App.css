@@ -89,7 +89,7 @@ form label {
 }
 
 .errors p {
-  color: red;
+  color: yellow;
   font-size: 12px;
   padding-top: 0;
   padding-left: 2px;
@@ -105,7 +105,7 @@ form label {
 }
 
 .char-count-error.submitted {
-  color: red;
+  color: yellow;
 }
 
 .info-title {
